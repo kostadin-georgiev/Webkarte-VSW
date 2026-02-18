@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>VSG Audiomonitoring Hessen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
+<!-- Leaflet Locate Control CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol@0.77.0/dist/L.Control.Locate.min.css" />
+    
+<!-- Leaflet Locate Control JS -->
+<script src="https://unpkg.com/leaflet.locatecontrol@0.77.0/dist/L.Control.Locate.min.js"></script>
+    
+<!-- PapaParse for CSV -->
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+    html, body { height: 100%; margin: 0; }
+    #map { height: 100%; width: 100%; }
+
+    .legend {
+        background: white;
+        padding: 10px 14px;
+        font-size: 12px;
+        line-height: 18px;
+        color: #333;
+        border-radius: 4px;
+    }
+    .legend i {
+        width: 16px;
+        height: 16px;
+        float: left;
+        margin-right: 6px;
+        opacity: 0.95;
+    }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Leaflet Locate Control JS -->
+<script src="https://unpkg.com/leaflet.locatecontrol@0.77.0/dist/L.Control.Locate.min.js"></script>
+
+<script>
+/* =====================================================
+   BASE MAPS
+===================================================== */
+const openTopoMap = L.tileLayer(
+    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    { 
+    attribution: '© OpenTopoMap contributors',
+    opacity: 0.9   // 0 = transparent, 1 = solid
+        }
+);
+
+const esriSatellite = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { 
+    attribution: 'Tiles © Esri',
+    opacity: 0.9   // 0 = transparent, 1 = solid
+    }
+);
+
+/* =====================================================
+   MAP INITIALIZATION (Hesse)
+===================================================== */
+const map = L.map('map', {
+    center: [50.6, 9.0],
+    zoom: 8.5,
+    layers: [openTopoMap]
+  });
+    
+// =========================
+// PANES (z-index control)
+// =========================
+map.createPane("polygonsPane");
+map.getPane("polygonsPane").style.zIndex = 400;
+
+map.createPane("pointsPane");
+map.getPane("pointsPane").style.zIndex = 500;
+
+    
+/* =====================================================
+   VOGELSCHUTZGEBIETE LAYER (GeoJSON from ArcGIS REST)
+===================================================== */
+const vogelschutzStyle = {
+    color: '#ff8c00',
+    weight: 3,
+    fillColor: '#ff8c00',
+    fillOpacity: 0.3
+};
+
+const vogelschutzHoverStyle = {
+    color: '#f0ffff',
+    weight: 3
+};
+
+// GeoJSON Layer
+const vogelschutzLayer = L.geoJSON(null, {
+    pane: "polygonsPane",   // for the order of appearrence
+    style: vogelschutzStyle,
+    onEachFeature: function(feature, layer) {
+
+        // Add click event for each feature
+        layer.on('click', function (e) {
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(`<b>Vogelschutzgebiet:</b><br>${feature.properties.NAME}`)
+                .openOn(map);
+        });
+    }
+});
+
+// Load GeoJSON from ArcGIS REST
+const vogelschutzUrl =
+    "https://geodienste-umwelt.hessen.de/arcgis/rest/services/inspire/schutzgebiete/MapServer/0/query?" +
+    "where=1=1&outFields=*&f=geojson";
+
+fetch(vogelschutzUrl)
+    .then(res => res.json())
+    .then(data => vogelschutzLayer.addData(data))
+    .catch(err => console.error("Vogelschutzgebiete load error:", err));/* =====================================================
+   ORNITHO RASTER HESSEN (Local GeoJSON Polygon)
+===================================================== */
+
+const ornithoRasterStyle = {
+    color: '#8a2be2',
+    weight: 2,
+    fillColor: '#8a2be2',
+    fillOpacity: 0.05
+};
+
+const ornithoRasterHoverStyle = {
+    color: '#ffffff',
+    weight: 3
+};
+
+const ornithoRasterLayer = L.geoJSON(null, {
+    pane: "polygonsPane",
+    style: ornithoRasterStyle,
+    onEachFeature: function(feature, layer) {
+
+        layer.on({
+            mouseover: function(e) {
+                e.target.setStyle(ornithoRasterHoverStyle);
+            },
+            mouseout: function(e) {
+                ornithoRasterLayer.resetStyle(e.target);
+            },
+            click: function(e) {
+                L.popup()
+                    .setLatLng(e.latlng)
+                    .setContent(`<b>Ornitho Raster Hessen</b>`)
+                    .openOn(map);
+            }
+        });
+
+    }
+});
+
+// Load local GeoJSON file
+fetch("ornitho_raster_hessen.geojson")
+    .then(response => response.json())
+    .then(data => ornithoRasterLayer.addData(data))
+    .catch(error => console.error("Ornitho Raster load error:", error));
+
+/* =====================================================
+   trackIT 65  Stk POINT LAYER FROM CSV (X/Y, EPSG:4326)
+===================================================== */
+const audioRecorderLayer65 = L.geoJSON(null, {
+        pointToLayer: function(feature, latlng) {
+        return L.circleMarker(latlng, {
+            pane: "pointsPane",
+            radius: 6,
+            color: '#0000ff',
+            fillColor: '#0000ff',
+            fillOpacity: 0.5
+        });
+    },
+    onEachFeature: function (feature, layer) {
+  if (feature.properties) {
+    layer.bindTooltip(`
+            <b>ID_PLACE:</b> ${feature.properties.ID_PLACE}<br>
+            <b>Forstamt:</b> ${feature.properties.Forstamt}<br>
+            <b>Forstrevier:</b> ${feature.properties.FO_Revier}<br>
+            <b>Staatswald:</b> ${feature.properties.Staatswald}<br>
+      `,
+      { sticky: true }
+    );
+  }
+}
+
+});
+
+// Load CSV and convert to GeoJSON
+Papa.parse('Audiorecorder_trackIT_VSG_Monitoring_WGS84_2026_Stand-18022026.csv', {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    encoding: "UTF-8", // WICHTIG für Umlaute
+    complete: function(results) {
+        const geojson = {
+            type: 'FeatureCollection',
+            features: []
+        };
+
+        results.data.forEach(row => {
+            if (row.X !== undefined && row.Y !== undefined) {
+                geojson.features.push({
+                    type: 'Feature',
+                    geometry: { type: 'Point', coordinates: [row.X, row.Y] },
+                    properties: row
+                });
+            }
+        });
+
+        audioRecorderLayer65.addData(geojson);
+    }
+});
+/* =====================================================
+   VSW 130  Stk POINT LAYER FROM CSV (X/Y, EPSG:4326)
+===================================================== */
+const audioRecorderLayer = L.geoJSON(null, {
+        pointToLayer: function(feature, latlng) {
+        return L.circleMarker(latlng, {
+            pane: "pointsPane",
+            radius: 5,
+            color: '#002900',
+            fillColor: '#00ff00',
+            fillOpacity: 0.7
+        });
+    },
+    onEachFeature: function (feature, layer) {
+  if (feature.properties) {
+    layer.bindTooltip(`
+            <b>ID_PLACE:</b> ${feature.properties.ID_PLACE}<br>
+            <b>Forstamt:</b> ${feature.properties.Forstamt}<br>
+            <b>Forstrevier:</b> ${feature.properties.FO_Revier}<br>
+            <b>Staatswald:</b> ${feature.properties.Staatswald}<br>
+      `,
+      { sticky: true }
+    );
+  }
+}
+
+});
+
+// Load CSV and convert to GeoJSON
+Papa.parse('Audiorecorder_VSW_VSG_Monitoring_WGS84_2026_Stand-18022026.csv', {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    encoding: "UTF-8", // WICHTIG für Umlaute
+    complete: function(results) {
+        const geojson = {
+            type: 'FeatureCollection',
+            features: []
+        };
+
+        results.data.forEach(row => {
+            if (row.X !== undefined && row.Y !== undefined) {
+                geojson.features.push({
+                    type: 'Feature',
+                    geometry: { type: 'Point', coordinates: [row.X, row.Y] },
+                    properties: row
+                });
+            }
+        });
+
+        audioRecorderLayer.addData(geojson);
+    }
+});
+/* =====================================================
+   LAYER CONTROL (TOP LEFT)
+===================================================== */
+const baseMaps = {
+    "OpenTopoMap": openTopoMap,
+    "ESRI Satellite": esriSatellite
+};
+
+const overlayMaps = {
+    "Audiorecorder trackIT 65 Stk.": audioRecorderLayer65,
+    "Audiorecorder Songmeter/VSW 130 Stk.": audioRecorderLayer,
+    "Vogelschutzgebiete": vogelschutzLayer,
+    "Ornitho Raster Hessen": ornithoRasterLayer      
+};
+
+L.control.layers(baseMaps, overlayMaps, { 
+    position: 'topleft', 
+    collapsed: true 
+}).addTo(map);
+
+/* =====================================================
+   LEGEND (TOP LEFT)
+
+const legend = L.control({ position: 'topleft' });
+legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML += '<b>Legend</b><br><br>';
+    div.innerHTML += '<i style="background:#0000ff; border-radius:10%;"></i>Audiorecorder';
+    div.innerHTML += '<i style="background:#d2b48c; border:0.2px solid #d2b48c;"></i>Vogelschutzgebiete<br>';
+    return div;
+};
+legend.addTo(map);
+===================================================== */
+/* =====================================================
+   GPS CONTROL FOR MOBILE
+===================================================== */
+L.control.locate({
+    position: 'topleft',
+    strings: { title: "Show my location" },
+    flyTo: true,
+    keepCurrentZoomLevel: false,
+    showPopup: true,
+    locateOptions: { enableHighAccuracy: true }
+}).addTo(map);
+
+// =========================
+  // Scale bar (bottom-left)
+  // =========================
+  L.control.scale({
+    position: "bottomleft",
+    metric: true,
+    imperial: false
+  }).addTo(map);
+
+</script>
+</body>
+</html>
