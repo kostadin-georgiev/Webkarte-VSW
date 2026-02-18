@@ -127,7 +127,9 @@ const vogelschutzUrl =
 fetch(vogelschutzUrl)
     .then(res => res.json())
     .then(data => vogelschutzLayer.addData(data))
-    .catch(err => console.error("Vogelschutzgebiete load error:", err));/* =====================================================
+    .catch(err => console.error("Vogelschutzgebiete load error:", err));
+    
+/* =====================================================
    ORNITHO RASTER HESSEN (Local GeoJSON Polygon)
 ===================================================== */
 
@@ -201,7 +203,7 @@ const audioRecorderLayer65 = L.geoJSON(null, {
 });
 
 // Load CSV and convert to GeoJSON
-Papa.parse('Audiorecorder_trackIT_VSG_Monitoring_WGS84_2026_Stand-18022026.csv', {
+Papa.parse('Audiorecorder_trackIT_VSG_Monitoring_2026_Stand-16022026.csv', {
     download: true,
     header: true,
     dynamicTyping: true,
@@ -254,7 +256,7 @@ const audioRecorderLayer = L.geoJSON(null, {
 });
 
 // Load CSV and convert to GeoJSON
-Papa.parse('Audiorecorder_VSW_VSG_Monitoring_WGS84_2026_Stand-18022026.csv', {
+Papa.parse('Audiorecorder_VSW_VSG_Monitoring_2026_Stand-16022026.csv', {
     download: true,
     header: true,
     dynamicTyping: true,
