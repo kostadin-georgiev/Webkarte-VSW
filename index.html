@@ -94,16 +94,14 @@ map.getPane("pointsPane").style.zIndex = 500;
 const ornithoRasterStyle = {
     color: '#757171',
     weight: 1,
-    fillColor: '#FCFCFC',
+    fillColor: '#fcfcfc',
     fillOpacity: 0.05
 };
     
-/* 
 const ornithoRasterHoverStyle = {
     color: '#ffffff',
     weight: 3
 };
-== */
     
 const ornithoRasterLayer = L.geoJSON(null, {
     pane: "polygonsPane",
@@ -118,7 +116,6 @@ const ornithoRasterLayer = L.geoJSON(null, {
                 .openOn(map);
     });   
     
-
 });
 
 // Load local GeoJSON file
