@@ -257,6 +257,7 @@ Papa.parse('Audiorecorder_trackIT_VSG_Monitoring_WGS84_2026_Stand-24022026.csv',
         audioRecorderLayer65.addData(geojson);
     }
 });
+    
 /* =====================================================
    VSW 130  Stk POINT LAYER FROM CSV (X/Y, EPSG:4326)
 ===================================================== */
@@ -310,6 +311,7 @@ Papa.parse('Audiorecorder_VSW_VSG_Monitoring_WGS84_2026_Stand-24022026.csv', {
         audioRecorderLayer.addData(geojson);
     }
 });
+    
 /* =====================================================
    LAYER CONTROL (TOP LEFT)
 ===================================================== */
@@ -323,7 +325,7 @@ const overlayMaps = {
     "Audiorecorder Songmeter/VSW 130 Stk.": audioRecorderLayer,
     "Vogelschutzgebiete": vogelschutzLayer,
     "Ornitho Raster Hessen": ornithoRasterLayer,
-    "LAEA Raster": leaeRasterLayer
+    "LAEA Raster": laeaRasterLayer
 };
 
 L.control.layers(baseMaps, overlayMaps, { 
