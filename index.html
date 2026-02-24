@@ -141,7 +141,7 @@ const laeaRasterHoverStyle = {
     weight: 3
 };
     
-const laeaRasterStyleLayer = L.geoJSON(null, {
+const laeaRasterLayer = L.geoJSON(null, {
     pane: "polygonsPane",
     style: laeaRasterStyle,
     onEachFeature: function(feature, layer) {
@@ -150,7 +150,7 @@ const laeaRasterStyleLayer = L.geoJSON(null, {
     layer.on('click', function (e) {
             L.popup()
                 .setLatLng(e.latlng)
-                .setContent(`<b>ID_PLACE:</b><br>${feature.properties.CellCode}`)
+                .setContent(`<b>CellCode:</b><br>${feature.properties.CellCode}`)
                 .openOn(map);
         });
 
@@ -160,7 +160,7 @@ const laeaRasterStyleLayer = L.geoJSON(null, {
 // Load local GeoJSON file
 fetch("LEAE_Raster.geojson")
     .then(response => response.json())
-    .then(data => laeaRasterStyleLayer.addData(data))
+    .then(data => laeaRasterLayer.addData(data))
     .catch(error => console.error("LAEA Raster load error:", error));
     
 /* =====================================================
@@ -333,19 +333,7 @@ L.control.layers(baseMaps, overlayMaps, {
     collapsed: true 
 }).addTo(map);
 
-/* =====================================================
-   LEGEND (TOP LEFT)
 
-const legend = L.control({ position: 'topleft' });
-legend.onAdd = function() {
-    const div = L.DomUtil.create('div', 'legend');
-    div.innerHTML += '<b>Legend</b><br><br>';
-    div.innerHTML += '<i style="background:#0000ff; border-radius:10%;"></i>Audiorecorder';
-    div.innerHTML += '<i style="background:#d2b48c; border:0.2px solid #d2b48c;"></i>Vogelschutzgebiete<br>';
-    return div;
-};
-legend.addTo(map);
-===================================================== */
 /* =====================================================
    GPS CONTROL FOR MOBILE
 ===================================================== */
