@@ -126,6 +126,44 @@ fetch("ornitho_raster_hessen.geojson")
     .catch(error => console.error("Ornitho Raster load error:", error));
     
 /* =====================================================
+   LAEA RASTER HESSEN (Local GeoJSON Polygon)
+===================================================== */
+
+const laeaRasterStyle = {
+    color: '#757171',
+    weight: 1,
+    fillColor: '#fcfcfc',
+    fillOpacity: 0.05
+};
+    
+const laeaRasterHoverStyle = {
+    color: '#ffffff',
+    weight: 3
+};
+    
+const laeaRasterStyleLayer = L.geoJSON(null, {
+    pane: "polygonsPane",
+    style: laeaRasterStyle,
+    onEachFeature: function(feature, layer) {
+
+    // Add click event for each feature
+    layer.on('click', function (e) {
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(`<b>ID_PLACE:</b><br>${feature.properties.CellCode}`)
+                .openOn(map);
+        });
+
+    }
+});  
+
+// Load local GeoJSON file
+fetch("LEAE_Raster.geojson")
+    .then(response => response.json())
+    .then(data => laeaRasterStyleLayer.addData(data))
+    .catch(error => console.error("LAEA Raster load error:", error));
+    
+/* =====================================================
    VOGELSCHUTZGEBIETE LAYER (GeoJSON from ArcGIS REST)
 ===================================================== */
 const vogelschutzStyle = {
