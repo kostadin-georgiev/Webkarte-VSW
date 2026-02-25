@@ -12,12 +12,6 @@
 <!-- Leaflet Locate Control CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol@0.77.0/dist/L.Control.Locate.min.css" />
     
-<!-- Leaflet Locate Control JS -->
-<script src="https://unpkg.com/leaflet.locatecontrol@0.77.0/dist/L.Control.Locate.min.js"></script>
-    
-<!-- PapaParse for CSV -->
-<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
-
 <style>
     html, body { height: 100%; margin: 0; }
     #map { height: 100%; width: 100%; }
@@ -43,13 +37,20 @@
 
 <div id="map"></div>
 
+<!-- Leaflet Locate Control JS -->
+<script src="https://unpkg.com/leaflet.locatecontrol@0.77.0/dist/L.Control.Locate.min.js"></script>
+    
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Leaflet Locate Control JS -->
-<script src="https://unpkg.com/leaflet.locatecontrol@0.77.0/dist/L.Control.Locate.min.js"></script>
+<!-- Esri Leaflet (SECOND!) -->
+<script src="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.js" ></script>
+
+<!-- PapaParse for CSV -->
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
+
 /* =====================================================
    BASE MAPS
 ===================================================== */
@@ -164,45 +165,81 @@ fetch("LEAE_Raster.geojson")
     .catch(error => console.error("LAEA Raster load error:", error));
     
 /* =====================================================
-   VOGELSCHUTZGEBIETE LAYER (GeoJSON from ArcGIS REST)
-===================================================== */
-const vogelschutzStyle = {
-    color: '#ff8c00',
-    weight: 3,
-    fillColor: '#ff8c00',
-    fillOpacity: 0.3
-};
+    VOGELSCHUTZGEBIETE LAYER (GeoJSON from ArcGIS REST) 
+	===================================================== */ 
 
-const vogelschutzHoverStyle = {
-    color: '#f0ffff',
-    weight: 3
-};
+	const vogelschutzLayer = L.esri.featureLayer({
+		 url: "https://geodienste-umwelt.hessen.de/arcgis/rest/services/inspire/schutzgebiete/MapServer/0",
+		 pane: "polygonsPane",
+		 minZoom: 9,
+		 style: {
+			 color: '#ff8c00',
+			 weight: 3,
+			 fillColor: '#ff8c00',
+			 fillOpacity: 0.3
+		 }
+	})
 
-// GeoJSON Layer
-const vogelschutzLayer = L.geoJSON(null, {
-    pane: "polygonsPane",   // for the order of appearrence
-    style: vogelschutzStyle,
-    onEachFeature: function(feature, layer) {
-
-        // Add click event for each feature
-        layer.on('click', function (e) {
-            L.popup()
-                .setLatLng(e.latlng)
-                .setContent(`<b>Vogelschutzgebiet:</b><br>${feature.properties.NAME}`)
-                .openOn(map);
-        });
-    }
+	vogelschutzLayer.bindPopup(function (layer) {
+		return `<b>Vogelschutzgebiet:</b><br>${layer.feature.properties.NAME || "-"}`;
 });
 
-// Load GeoJSON from ArcGIS REST
-const vogelschutzUrl =
-    "https://geodienste-umwelt.hessen.de/arcgis/rest/services/inspire/schutzgebiete/MapServer/0/query?" +
-    "where=1=1&outFields=*&f=geojson";
 
-fetch(vogelschutzUrl)
-    .then(res => res.json())
-    .then(data => vogelschutzLayer.addData(data))
-    .catch(err => console.error("Vogelschutzgebiete load error:", err));
+/* =====================================================
+    FLORA-FAUNA-HABITATE (FFH) LAYER
+    (GeoJSON from ArcGIS REST)
+===================================================== */ 
+
+	const ffhLayer = L.esri.featureLayer({
+		 url: "https://geodienste-umwelt.hessen.de/arcgis/rest/services/inspire/schutzgebiete/MapServer/1",
+		 pane: "polygonsPane",
+		 minZoom: 9,
+		 style: {
+			 color: '#5A40DD',
+			 weight: 2,
+			 fillColor: '#5A40DD',
+			 fillOpacity: 0.2
+		 }
+	})
+	
+	map.on('overlayadd', function (e) {
+		if (e.layer === ffhLayer) {
+			ffhLayer.addTo(map);
+		}
+	});
+
+	ffhLayer.bindPopup(function (layer) {
+		 return `<b>FFH-Gebiet:</b><br>${layer.feature.properties.NAME || "-"}`; });
+
+
+/* =====================================================
+    NSG LAYER
+    (GeoJSON from ArcGIS REST)
+===================================================== */
+
+const NSGStyle = {
+     color: '#3DAAE1',
+     weight: 2,
+     fillColor: '#3DAAE1',
+     fillOpacity: 0.25
+};
+
+const NSGLayer = L.esri.featureLayer({
+     url: "https://geodienste-umwelt.hessen.de/arcgis/rest/services/inspire/schutzgebiete/MapServer/2",
+     pane: "polygonsPane",
+	 minZoom: 9,
+     style: {
+         color: '#3DAAE1',
+         weight: 2,
+         fillColor: '#3DAAE1',
+         fillOpacity: 0.25
+     }
+})
+
+NSGLayer.bindPopup(function (layer) {
+     return `<b>NSG-Gebiet:</b><br>${layer.feature.properties.NAME || 
+"-"}`;
+});
 
 /* =====================================================
    trackIT 65  Stk POINT LAYER FROM CSV (X/Y, EPSG:4326)
@@ -323,7 +360,9 @@ const baseMaps = {
 const overlayMaps = {
     "Audiorecorder trackIT 65 Stk.": audioRecorderLayer65,
     "Audiorecorder Songmeter/VSW 130 Stk.": audioRecorderLayer,
-    "Vogelschutzgebiete": vogelschutzLayer,
+    "VSG": vogelschutzLayer,
+    "FFH": ffhLayer,
+    "NSG": NSGLayer
     "Ornitho Raster Hessen": ornithoRasterLayer,
     "LAEA Raster": laeaRasterLayer
 };
