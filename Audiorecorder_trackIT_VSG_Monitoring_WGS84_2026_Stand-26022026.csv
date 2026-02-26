@@ -1,4 +1,4 @@
-﻿X_crs25832;Y_crs25832;Recorder;NUTART;NSG-NR;NSG-NAME;TK25_NR;TK25_VIERT;ID_PLACE;VSG-NAME;VSG-NR;BETR;ABT;FFH-NAME;FFH-NR;Forstamt;Rev_HRORG;FO_Revier;FO_HR_ID;Staatswald;X_WGS84;Y_WGS84
+﻿X_crs25832;Y_crs25832;Recorder;NUTART;NSG-NR;NSG-NAME;TK25_NR;TK25_VIERT;ID_PLACE;VSG-NAME;VSG-NR;BETR;ABT;FFH-NAME;FFH-NR;Forstamt;Rev_HRORG;FO_Revier;FO_HR_ID;Staatswald;X;Y
 447426.164;5631961.738;trackIT;Nadelwald;;;5115;4;481990;Hauberge bei Haiger;5115-401;1667;1248;;;Herborn;197;Offdilln;1336;ja;8.25337;50.83697
 497274.5048;5623658.914;trackIT;Gewaesser;1534002;Schweinsberger Moor;5219;2;618941;Amöneburger Becken;5219-401;1505;256;;;Kirchhain;395;Stadtallendorf;1319;ja;8.96135;50.76469
 481328.0913;5622039.308;trackIT;Siedlung;;;5218;1;619030;Lahntal zwischen Marburg und Gießen;5218-401;;;;;Kirchhain;399;Fronhausen;1319;nein;8.73532;50.74983
@@ -64,3 +64,4 @@
 462761.6961;5598168.636;trackIT;Gruenland;;;5416;4;482361;Weinberg bei Wetzlar;5416-401;;;Weinberg bei Wetzlar;5416-301;Wetzlar;127;Wetzlar-Stoppelberg;1312;nein;8.47455;50.53428
 525162.1183;5589190.877;trackIT;Sonstiges;1535005;Ober-Mooser-Teich;5522;1;619392;Vogelsberg;5421-401;;;Vogelsbergteiche und Lüderaue bei Grebenhain;5522-304;Schotten;311;Freiensteinau;1368;nein;9.35445;50.45418
 558572.7286;5612262.865;trackIT;Mischwald;;;5324;2;487353;Hessische Rhön;5425-401;672;2697;Vorderrhön;5325-305;Burghaun;342;Hünfeld;1201;ja;9.82923;50.66023
+
