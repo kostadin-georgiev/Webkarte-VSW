@@ -1,4 +1,4 @@
-﻿X_crs25832;Y_crs25832;Recorder;NUTART;NSG-NR;NSG-NAME;TK25_NR;TK25_VIERT;ID_PLACE;VSG-NAME;VSG-NR;BETR;ABT;FFH-NAME;FFH-NR;Forstamt;Rev_HRORG;FO_Revier;FO_HR_ID;Staatswald;X_WGS84;Y_WGS84
+﻿X_crs25832;Y_crs25832;Recorder;NUTART;NSG-NR;NSG-NAME;TK25_NR;TK25_VIERT;ID_PLACE;VSG-NAME;VSG-NR;BETR;ABT;FFH-NAME;FFH-NR;Forstamt;Rev_HRORG;FO_Revier;FO_HR_ID;Staatswald;X;Y
 447285.1114;5633884.453;vsw;Mischwald;;;5115;2;481597;Hauberge bei Haiger;5115-401;1667;1270;;;Herborn;197;Offdilln;1336;ja;8.25109;50.85425
 457373.785;5633605.162;vsw;Gruenland;;;5116;1;483334;Hauberge bei Haiger;5115-401;;;;;Herborn;199;Breidenbacher Grund;1336;nein;8.39442;50.85411
 447684.7086;5626418.859;vsw;Mischwald;;;5215;2;481925;Hauberge bei Haiger;5115-401;1667;1187;;;Herborn;196;Struth;1336;ja;8.25783;50.78716
@@ -129,3 +129,4 @@
 515991.4448;5636564.858;vsw;Acker;;;5121;1;537108;Schwalmniederung bei Schwalmstadt;5121-401;;;;;Neukirchen;381;Willingshausen;1216;nein;9.22731;50.88054
 519584.7224;5635960.565;vsw;Gruenland;;;5121;2;537111;Schwalmniederung bei Schwalmstadt;5121-401;;;;;Neukirchen;382;Neukirchen;1216;nein;9.27836;50.87499
 503904.668;5689794.402;vsw;Gruenland;1635008;Vorsperre - Twistetalsperre;4620;1;537225;Vorsperre - Twistetalsperre;4620-401;;;Vorsperre - Twistetalsperre;4620-401;Frankenberg-Vöhl;539;Upland;1248;nein;9.05608;51.3594
+
