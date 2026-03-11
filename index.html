@@ -245,6 +245,25 @@ NSGLayer.bindPopup(function (layer) {
 });
 
 /* =====================================================
+   AviCon Stations (Local GeoJSON Polygon)
+===================================================== */
+
+const aviconRecorderLayer = L.geoJSON(null, {
+    pane: "pointsPane",
+    pointToLayer: (f,latlng) => L.circleMarker(latlng,{
+        radius:6,
+        color:"#2BE6FF",
+        fillColor:"#792BFF",
+        fillOpacity:0.5
+    }),
+    onEachFeature:(f,l)=>l.bindPopup(`<b>Plot:</b><br>${f.properties?.Plot ?? "Unknown"}`)
+});
+
+fetch("Audiorecorder_AviCon_LangzeitMonitoring.geojson")
+.then(r=>r.json())
+.then(data=>aviconRecorderLayer.addData(data));
+	
+/* =====================================================
    trackIT 65  Stk POINT LAYER FROM CSV (X/Y, EPSG:4326)
 ===================================================== */
 const audioRecorderLayer65 = L.geoJSON(null, {
@@ -363,6 +382,7 @@ const baseMaps = {
 const overlayMaps = {
     "Audiorecorder trackIT 65 Stk.": audioRecorderLayer65,
     "Audiorecorder Songmeter/VSW 130 Stk.": audioRecorderLayer,
+	"Audiorecorder AviCon Langzeit": aviconRecorderLayer,
     "VSG": vogelschutzLayer,
     "FFH": ffhLayer,
     "NSG": NSGLayer,
