@@ -252,8 +252,8 @@ const aviconRecorderLayer = L.geoJSON(null, {
     pane: "pointsPane",
     pointToLayer: (f,latlng) => L.circleMarker(latlng,{
         radius:6,
-        color:"#2BE6FF",
-        fillColor:"#792BFF",
+        color:"#4F665E",
+        fillColor:"#60E6C2",
         fillOpacity:0.5
     }),
     onEachFeature:(f,l)=>l.bindPopup(`<b>Plot:</b><br>${f.properties?.Plot ?? "Unknown"}`)
