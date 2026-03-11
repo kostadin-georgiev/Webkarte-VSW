@@ -251,10 +251,10 @@ NSGLayer.bindPopup(function (layer) {
 const aviconRecorderLayer = L.geoJSON(null, {
     pane: "pointsPane",
     pointToLayer: (f,latlng) => L.circleMarker(latlng,{
-        radius:6,
-        color:"#4F665E",
-        fillColor:"#60E6C2",
-        fillOpacity:0.5
+        radius:7,
+        color:"#2E060F",
+        fillColor:"#AD344C",
+        fillOpacity:0.2
     }),
     onEachFeature:(f,l)=>l.bindPopup(`<b>Plot:</b><br>${f.properties?.Plot ?? "Unknown"}`)
 });
